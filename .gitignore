@@ -6,3 +6,5 @@ src/init.o
 src/picosat.o
 src/r_picosat.o
 src/rpicosat.so
+*.Rproj
+
