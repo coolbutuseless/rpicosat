@@ -2818,6 +2818,7 @@ fix_impl_lits (PS * ps, long delta)
   Lit ** p;
 
   for (s = ps->impls + 2; s <= ps->impls + 2 * ps->max_var + 1; s++)
+    if (s->count > 0) // MikeFC: ASAN fix
     for (p = s->start; p < s->start + s->count; p++)
       *p += delta;
 }
@@ -3430,7 +3431,10 @@ satisfied (PS * ps)
     return 0;
   assert (!ps->conflict);
   assert (bcp_queue_is_empty (ps));
-  return ps->thead == ps->trail + ps->max_var;	/* all assigned */
+  if (ps->thead == NULL && ps->trail == NULL) {
+    return (ps->max_var == 0);
+  }
+  return (ps->max_var == 0) ? ps->thead == ps->trail : ps->thead == ps->trail + ps->max_var;	/* all assigned. MikeFC: ASAN fix */
 }
 
 static void
@@ -3902,7 +3906,7 @@ prop2 (PS * ps, Lit * this)
 #ifdef NO_BINARY_CLAUSES
   lstk = LIT2IMPLS (this);
   start = lstk->start;
-  l = start + lstk->count;
+  l = lstk->count == 0 ? start : start + lstk->count; // MikeFC: ASAN fix
   while (l != start)
     {
       /* The counter 'visits' is the number of clauses that are
@@ -4710,6 +4714,7 @@ collect_clauses (PS * ps)
 	      Lit ** r, ** s;
 	      r = lstk->start;
 	      if (lit->val != TRUE || LIT2VAR (lit)->level)
+	        if (lstk->count > 0) // MikeFC: ASAN fix
 		for (s = r; s < lstk->start + lstk->count; s++)
 		  {
 		    Lit * other = *s;

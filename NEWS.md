@@ -1,3 +1,9 @@
+# rpicosat 1.0.1.9001
+
+* Add sudoku solving test
+* in `*.c` use `snprintf()` instead of `sprintf()` to silence warnings
+* address some ASAN warnings
+
 # rpicosat 1.0.1.9000
 
 * Minor change to fix CRAN notes
