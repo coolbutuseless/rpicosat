@@ -2387,8 +2387,8 @@ REENTER:
 		{
 		  litlevel = LIT2VAR (lit)->level;
 		  assert (litlevel <= ps->LEVEL);
-		  while (ps->levels + litlevel >= ps->levelshead)
-		    {
+		  while (ps->levels == NULL || (ps->levels + litlevel >= ps->levelshead)) // MikeFC: ASAN fix
+		  {
 		      if (ps->levelshead >= ps->eolevels)
 			ENLARGE (ps->levels, ps->levelshead, ps->eolevels);
 		      assert (ps->levelshead < ps->eolevels);
